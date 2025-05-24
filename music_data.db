@@ -1,0 +1,137 @@
+-- Music Prediction Platform Database Schema
+-- Designed for scalability and efficient querying
+
+-- Core song information table
+CREATE TABLE songs (
+    id SERIAL PRIMARY KEY,
+    spotify_id VARCHAR(50) UNIQUE,
+    track_name VARCHAR(500) NOT NULL,
+    artist_name VARCHAR(500) NOT NULL,
+    album_name VARCHAR(500),
+    release_date DATE,
+    duration_ms INTEGER,
+    explicit BOOLEAN,
+    popularity INTEGER, -- Spotify popularity score (0-100)
+    preview_url TEXT,
+    external_urls JSONB, -- Store various platform URLs as JSON
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Audio features from Spotify
+CREATE TABLE audio_features (
+    id SERIAL PRIMARY KEY,
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    danceability DECIMAL(3,3),
+    energy DECIMAL(3,3),
+    key_signature INTEGER,
+    loudness DECIMAL(6,3),
+    mode INTEGER, -- 0 = minor, 1 = major
+    speechiness DECIMAL(3,3),
+    acousticness DECIMAL(3,3),
+    instrumentalness DECIMAL(3,3),
+    liveness DECIMAL(3,3),
+    valence DECIMAL(3,3), -- musical positivity
+    tempo DECIMAL(7,3),
+    time_signature INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Chart performance data
+CREATE TABLE chart_performance (
+    id SERIAL PRIMARY KEY,
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    chart_name VARCHAR(100) NOT NULL, -- 'iTunes Top 100', 'Last.fm Weekly', etc.
+    chart_date DATE NOT NULL,
+    position INTEGER,
+    peak_position INTEGER,
+    weeks_on_chart INTEGER,
+    streams_count BIGINT, -- if available
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(song_id, chart_name, chart_date)
+);
+
+-- Social media metrics
+CREATE TABLE social_metrics (
+    id SERIAL PRIMARY KEY,
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    platform VARCHAR(50) NOT NULL, -- 'twitter', 'youtube', 'soundcloud'
+    metric_type VARCHAR(50) NOT NULL, -- 'mentions', 'plays', 'likes', 'shares'
+    metric_value BIGINT,
+    collection_date DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Artist information
+CREATE TABLE artists (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL,
+    spotify_id VARCHAR(50) UNIQUE,
+    genres TEXT[], -- PostgreSQL array of genres
+    followers_count BIGINT,
+    popularity INTEGER, -- Spotify artist popularity
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Many-to-many relationship between songs and artists
+CREATE TABLE song_artists (
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    artist_id INTEGER REFERENCES artists(id) ON DELETE CASCADE,
+    PRIMARY KEY (song_id, artist_id)
+);
+
+-- Feature engineering results storage
+CREATE TABLE engineered_features (
+    id SERIAL PRIMARY KEY,
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    feature_name VARCHAR(100) NOT NULL,
+    feature_value DECIMAL(10,6),
+    feature_category VARCHAR(50), -- 'audio', 'social', 'temporal', 'metadata'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(song_id, feature_name)
+);
+
+-- Model predictions storage
+CREATE TABLE predictions (
+    id SERIAL PRIMARY KEY,
+    song_id INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+    model_name VARCHAR(100) NOT NULL,
+    model_version VARCHAR(50),
+    hit_probability DECIMAL(5,4), -- Probability of being a hit (0-1)
+    predicted_streams BIGINT, -- Predicted stream count
+    confidence_score DECIMAL(5,4),
+    prediction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actual_outcome BOOLEAN, -- To be filled later for model evaluation
+    actual_streams BIGINT -- Actual streams for evaluation
+);
+
+-- Indexes for better query performance
+CREATE INDEX idx_songs_release_date ON songs(release_date);
+CREATE INDEX idx_songs_popularity ON songs(popularity);
+CREATE INDEX idx_chart_performance_date ON chart_performance(chart_date);
+CREATE INDEX idx_chart_performance_position ON chart_performance(position);
+CREATE INDEX idx_social_metrics_platform ON social_metrics(platform);
+CREATE INDEX idx_social_metrics_date ON social_metrics(collection_date);
+CREATE INDEX idx_predictions_model ON predictions(model_name, model_version);
+
+-- Views for common queries
+CREATE VIEW song_summary AS
+SELECT 
+    s.id,
+    s.track_name,
+    s.artist_name,
+    s.release_date,
+    s.popularity as spotify_popularity,
+    af.danceability,
+    af.energy,
+    af.valence,
+    cp.peak_position,
+    cp.weeks_on_chart
+FROM songs s
+LEFT JOIN audio_features af ON s.id = af.song_id
+LEFT JOIN (
+    SELECT song_id, MIN(position) as peak_position, COUNT(*) as weeks_on_chart
+    FROM chart_performance 
+    GROUP BY song_id
+) cp ON s.id = cp.song_id;
