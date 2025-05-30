@@ -1,3 +1,336 @@
-/venv
+# Music Prediction Platform - .gitignore
 
+# ===== SENSITIVE DATA =====
+# Environment variables and API keys
+.env
+.env.local
+.env.development
+.env.production
+*.env
 
+# Configuration files with secrets
+config/secrets.json
+config/api_keys.json
+config/credentials.json
+
+# ===== DATABASE FILES =====
+# SQLite databases (contain collected data)
+*.db
+*.sqlite
+*.sqlite3
+music_data*.db
+*_backup.db
+
+# Database dumps and exports
+*.sql
+*.dump
+
+# ===== PYTHON =====
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ===== DATA FILES =====
+# Raw data files
+data/raw/
+data/cache/
+data/temp/
+
+# Large data files
+*.csv
+*.json
+*.xlsx
+*.xls
+*.parquet
+
+# Exported data (except samples)
+exports/
+exports/*.csv
+exports/*.json
+exports/*.xlsx
+
+# Keep sample data for testing
+!data/samples/
+!**/sample_*.csv
+!**/example_*.json
+
+# ===== LOGS AND REPORTS =====
+# Log files
+logs/
+*.log
+*.log.*
+
+# Reports (they're generated, not source)
+reports/
+reports/*.json
+reports/*.html
+reports/*.pdf
+
+# ===== MODELS AND ARTIFACTS =====
+# Machine learning models
+models/
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.model
+*.ckpt
+
+# Model artifacts
+artifacts/
+mlruns/
+.mlflow/
+
+# ===== CACHE AND TEMP =====
+# Cache directories
+cache/
+.cache/
+tmp/
+temp/
+.tmp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== IDE AND EDITOR =====
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Atom
+.atom/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===== JUPYTER NOTEBOOKS =====
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# JupyterLab
+.jupyter/
+
+# ===== API AND SERVICES =====
+# Service account keys
+*-key.json
+*-credentials.json
+service-account*.json
+
+# Certificate files
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+
+# ===== BACKUP FILES =====
+# Backup files
+*.bak
+*.backup
+*_backup
+*_old
+*.orig
+
+# ===== PROJECT SPECIFIC =====
+# Spotify cache
+.cache-*
+
+# YouTube data cache
+youtube_cache/
+
+# Last.fm cache
+lastfm_cache/
+
+# Test databases
+test_*.db
+*_test.db
+
+# Development files
+dev/
+development/
+scratch/
+playground/
+
+# Documentation builds
+docs/build/
+docs/_build/
+
+# Performance profiling
+*.prof
+*.profile
+
+# ===== KEEP THESE FILES =====
+# Configuration templates (without secrets)
+!config/config.template.json
+!config/settings.example.json
+
+# Sample data for testing
+!data/samples/
+!tests/fixtures/
+
+# Documentation
+!docs/
+!README.md
+!CHANGELOG.md
+!LICENSE
+
+# Requirements and setup
+!requirements.txt
+!setup.py
+!pyproject.toml
+
+# Scripts (but not outputs)
+!scripts/
+scripts/outputs/
+scripts/temp/
