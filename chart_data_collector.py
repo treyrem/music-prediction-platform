@@ -233,14 +233,14 @@ class ChartDataCollector:
         # iTunes charts (multiple countries)
         countries = ["us", "gb", "ca", "au"]
         for country in countries:
-            entries = self.collect_itunes_top_charts(country, limit=50)
+            entries = self.collect_itunes_top_charts(country, limit=200)
             all_entries.extend(entries)
             time.sleep(1)  # Be respectful to APIs
 
         # Last.fm (if API key provided)
         if lastfm_api_key:
             entries = self.collect_lastfm_top_tracks(
-                lastfm_api_key, period="7day", limit=50
+                lastfm_api_key, period="7day", limit=200
             )
             all_entries.extend(entries)
             time.sleep(1)
